@@ -1,0 +1,29 @@
+{
+  "info": {
+    "name": "RiffReview API",
+    "description": "Fluxos de autenticação, catálogo, avaliações e votos. Defina baseUrl e token após executar o login.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "token", "value": "" },
+    { "key": "avaliacaoId", "value": "1" },
+    { "key": "itemId", "value": "1" }
+  ],
+  "item": [
+    { "name": "Cadastrar usuário", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"nome\":\"Ana\",\"email\":\"ana@example.com\",\"senha\":\"senha-segura-123\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/auth/cadastro" } },
+    { "name": "Login (guarda token)", "event": [{ "listen": "test", "script": { "exec": ["if (pm.response.code === 200) pm.collectionVariables.set('token', pm.response.json().token);"], "type": "text/javascript" } }], "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"ana@example.com\",\"senha\":\"senha-segura-123\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/auth/login" } },
+    { "name": "Criar item musical", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }], "body": { "mode": "raw", "raw": "{\"tipo\":\"ALBUM\",\"nome\":\"Álbum de exemplo\",\"artista\":\"Artista\",\"descricao\":\"Descrição opcional\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/itens" } },
+    { "name": "Pesquisar bandas", "request": { "method": "GET", "url": "{{baseUrl}}/api/bandas?q=Pink" } },
+    { "name": "Pesquisar artistas", "request": { "method": "GET", "url": "{{baseUrl}}/api/artistas?q=David" } },
+    { "name": "Pesquisar álbuns", "request": { "method": "GET", "url": "{{baseUrl}}/api/albuns?q=Dark" } },
+    { "name": "Pesquisar músicas", "request": { "method": "GET", "url": "{{baseUrl}}/api/musicas?q=Time" } },
+    { "name": "Listar avaliações públicas", "request": { "method": "GET", "url": "{{baseUrl}}/api/avaliacoes?itemId={{itemId}}" } },
+    { "name": "Criar avaliação", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }], "body": { "mode": "raw", "raw": "{\"texto\":\"Minha opinião sobre este lançamento.\",\"itemId\":{{itemId}}}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/avaliacoes" } },
+    { "name": "Buscar avaliação", "request": { "method": "GET", "url": "{{baseUrl}}/api/avaliacoes/{{avaliacaoId}}" } },
+    { "name": "Editar avaliação (somente autor)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }], "body": { "mode": "raw", "raw": "{\"texto\":\"Texto atualizado.\"}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/avaliacoes/{{avaliacaoId}}" } },
+    { "name": "Votar útil", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }], "body": { "mode": "raw", "raw": "{\"util\":true}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/avaliacoes/{{avaliacaoId}}/votos" } },
+    { "name": "Remover meu voto", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/avaliacoes/{{avaliacaoId}}/votos" } },
+    { "name": "Excluir avaliação (somente autor)", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/avaliacoes/{{avaliacaoId}}" } }
+  ]
+}
